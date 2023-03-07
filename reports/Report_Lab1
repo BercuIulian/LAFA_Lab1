@@ -1,1 +1,51 @@
+#Report Lab1
+
+The grammar I had for this Lab is Variant 4
+VN={S, L, D}, 
+VT={a, b, c, d, e, f, j},
+P={ 
+    S → aS
+    S → bS
+    S → cD
+    S → dL
+    S → e
+    L → eL
+    L → fL
+    L → jD
+    L → e
+    D → eD
+    D → d
+}
+
+With the following objectives:
+Understand what a language is and what it needs to have in order to be considered a formal one.
+
+Provide the initial setup for the evolving project that you will work on during this semester. I said project because usually at lab works, I encourage/impose students to treat all the labs like stages of development of a whole project. Basically you need to do the following:
+
+a. Create a local && remote repository of a VCS hosting service (let us all use Github to avoid unnecessary headaches);
+
+b. Choose a programming language, and my suggestion would be to choose one that supports all the main paradigms;
+
+c. Create a separate folder where you will be keeping the report. This semester I wish I won't see reports alongside source code files, fingers crossed;
+
+According to your variant number (by universal convention it is register ID), get the grammar definition and do the following tasks:
+
+a. Implement a type/class for your grammar;
+
+b. Add one function that would generate 5 valid strings from the language expressed by your given grammar;
+
+c. Implement some functionality that would convert and object of type Grammar to one of type Finite Automaton;
+
+d. For the Finite Automaton, please add a method that checks if an input string can be obtained via the state transition from it;
+
+
+
+In the implementation I created a loop in main that will access grammar class 5 times in order to generate 5 random string. In grammar class there are 3 string functions for each valid character. In order for the string to be random I used the time function, since the time will not be the same. The last void function in class grammar is check. This function will output true if the string coresponds tothe grammar and false if the string does not corespond.
+
+Here is the Final Automata for this variant:
+
+
+
+
+
 
