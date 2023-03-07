@@ -41,11 +41,3 @@ d. For the Finite Automaton, please add a method that checks if an input string 
 
 
 In the implementation I created a loop in main that will access grammar class 5 times in order to generate 5 random string. In grammar class there are 3 string functions for each valid character. In order for the string to be random I used the time function, since the time will not be the same. The last void function in class grammar is check. This function will output true if the string coresponds tothe grammar and false if the string does not corespond.
-
-Here is the Final Automata for this variant:
-
-
-
-
-
-
