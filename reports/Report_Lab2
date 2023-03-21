@@ -1,1 +1,32 @@
+#Report Lab1
 
+the objectives for this lab are:
+Understand what an automaton is and what it can be used for.
+Continuing the work in the same repository and the same project, the following need to be added:
+a. Provide a function in your grammar type/class that could classify the grammar based on Chomsky hierarchy.
+b. For this you can use the variant from the previous lab.
+According to your variant number (by universal convention it is register ID), get the finite automaton definition and do the following tasks:
+a. Implement conversion of a finite automaton to a regular grammar.
+b. Determine whether your FA is deterministic or non-deterministic.
+c. Implement some functionality that would convert an NDFA to a DFA.
+d. Represent the finite automaton graphically (Optional, and can be considered as a bonus point):
+You can use external libraries, tools or APIs to generate the figures/diagrams.
+Your program needs to gather and send the data about the automaton and the lib/tool/API return the visual representation.
+
+For the previous grammar i created a function to classify it based ln Chomsky hierarchy.
+For the following tasks I used another predifined Finite Automaton(FA).
+
+Variant 4
+AF = (Q,∑,δ,q0,F)
+Q = {q0,q1,q2,q3},
+∑ = {a,b},
+F = {q3},
+δ(q0,a) = q1,
+δ(q0,a) = q2,
+δ(q1,b) = q1,
+δ(q1,a) = q2,
+δ(q2,a) = q1,
+δ(q2,b) = q3.
+
+based on this FA i implemented a function to convert it into regular grammar, and one to find out if it is deterministic or non-deterministic.
+For the end i creaded a function to convert NDFA to DFA.
