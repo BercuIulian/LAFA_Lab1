@@ -46,7 +46,7 @@ Lexer, tokenizer, or scanner are all terms for programs that conduct lexical ana
 * The 'advance' method increments the current position in the input string, while 'current_char' returns the current character at that position.The 'skip_whitespace'
   method moves the current position past any whitespace characters, while 'collect_digits' collects a sequence of digits starting from the current position.
 
-```
+   ```
     class Lexer {
     public:
       explicit Lexer(const string& text) : text_(text), pos_(0) {}
@@ -69,10 +69,11 @@ Lexer, tokenizer, or scanner are all terms for programs that conduct lexical ana
       }
       return result;
     }
-```
+   ```
 
 * The 'collect_token' method collects the next token by checking the current character and either advancing the position and returning a corresponding 'Token' object
   or throwing an error if the character is invalid.
+  
   ```
     Token collect_token() {
     char current = current_char();
@@ -120,7 +121,7 @@ Lexer, tokenizer, or scanner are all terms for programs that conduct lexical ana
   };
   ```
   
-  * Finally, in the 'main' function, we create a 'Lexer' object with a sample input string, tokenize it, and print out each token's type and value using a 'for' loop.
+* Finally, in the 'main' function, we create a 'Lexer' object with a sample input string, tokenize it, and print out each token's type and value using a 'for' loop.
   
   ```
     string formula = "3 + 4 * 2 / ( 1 - 5 )";
