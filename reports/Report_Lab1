@@ -152,8 +152,6 @@ d. For the Finite Automaton, please add a method that checks if an input string 
 
 
 
-#Report Lab1
-
 The grammar I had for this Lab is Variant 4
 VN={S, L, D}, 
 VT={a, b, c, d, e, f, j},
