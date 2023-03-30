@@ -38,104 +38,85 @@ VN={S, L, D},
 VT={a, b, c, d, e, f, j}
 
 P={ 
-    S → aS
-    S → bS
-    S → cD
-    S → dL
-    S → e
-    L → eL
-    L → fL
-    L → jD
-    L → e
-    D → eD
-    D → d
+    S → aS;
+    S → bS;
+    S → cD;
+    S → dL;
+    S → e;
+    L → eL;
+    L → fL;
+    L → jD;
+    L → e;
+    D → eD;
+    D → d;
 }
 
-*  The 'State' struct is the finite automaton and 'Rule' a regular grammar production rule. Then there follows 'fa_to_rg' that is a vector ment to covnert a finite 
-   automaton to a regular grammar. Next it assigns a unique non-terminal to each state and Adds productions for each state.
+*  Class 'grammar' has a 'string' function for each non-terminal variable S, L, D that will return one of the global variables declared as a const string above. The 'string' function calls to a 'switch' that will randomly generate a global variable.
    ```
-      struct State {
-    string id;
-    unordered_map<char, set<string>> transitions;
-   };
-
-   struct Rule {
-       char nonTerminal;
-       string production;
-   };
-
-   vector<Rule> fa_to_rg(const vector<State>& states, string startState, set<string> acceptStates) {
-       vector<Rule> rules;
-       unordered_map<string, char> stateToNonTerminal;
-
-       int nonTerminalId = 0;
-       for (const auto& state : states) {
-           if (state.id == startState) {
-               stateToNonTerminal[state.id] = 'S'; 
-           } else {
-               stateToNonTerminal[state.id] = 'A' + nonTerminalId;
-               ++nonTerminalId;
-           }
-       }
-
-       for (const auto& state : states) {
-           char nonTerminal = stateToNonTerminal[state.id];
-           for (const auto& transition : state.transitions) {
-               char inputSymbol = transition.first;
-               for (const auto& nextState : transition.second) {
-                   char nextNonTerminal = stateToNonTerminal[nextState];
-                   if (acceptStates.count(nextState)) {
-                       rules.push_back({ nonTerminal, string(1, inputSymbol) + nextNonTerminal });
-                   } else {
-                       rules.push_back({ nonTerminal, string(1, inputSymbol) + nextNonTerminal });
-                       rules.push_back({ nextNonTerminal, "" });
-                   }
-               }
-           }
-       }
-       return rules;
-   }
+    string S();
+    string L();
+    string D();
+    const string VT = "abcdefj";
+    class grammar {
+        public:
+        string S() {
+            int r = rand() % 5;
+            switch (r) {
+                case 0:
+                    return "e";
+                case 1:
+                    return "a" + S();
+                case 2:
+                    return "b" + S();
+                case 3:
+                    return "c" + D();
+                case 4:
+                    return "d" + L();
+            }
+        }
+    string L() {
+        int r = rand() % 4;
+        switch (r) {
+            case 0:
+                return "e";
+            case 1:
+                return "e" + L();
+            case 2:
+                return "f" + L();
+            case 3:
+                return "j" + D();
+        }
+    }
+    string D() {
+        int r = rand() % 2;
+        switch (r) {
+            case 0:
+                return "d";
+            case 1:
+                return "e" + D();
+        }
+    }
    ```
 
 
-* The 'is_deterministic' is a typedef that defines the finite automata as a tuple, then there is a map 'transitions' that will keep track of the transitions.
-   At the end a 'for' that will loop throuhg all the states to check if it is deterministic or non-deterministic.
+* The 'check' void is a function that checks if a entered string is a valid one. The function works based on an aux variable that will increment if the next variable obeys the low of the grammar. If the 'aux' is the same as the length of the string then it is a valid string.
 
    ```
-   typedef tuple<set<string>, set<char>, map<pair<string, char>, set<string>>, string, set<string>> finite_automata;
-   bool is_deterministic(finite_automata AF) {
-       set<string> Q;
-       set<char> sigma;
-       map<pair<string, char>, set<string>> delta;
-       string q0;
-       set<string> F;
-
-       tie(Q, sigma, delta, q0, F) = AF;
-
-       map<string, map<char, string>> transitions; 
-       
-       for (auto q : Q) {
-           for (auto a : sigma) {
-               auto next_states = delta[{q, a}];
-               if (next_states.empty()) {
-                   return false;
-               }
-               if (next_states.size() > 1) {
-                   return false;
-               }
-               string next_state = *next_states.begin();
-               if (transitions[q].count(a) > 0) {
-                   if (transitions[q][a] != next_state) {
-                       return false;
-                   }
-               } else {
-                   transitions[q][a] = next_state;
-               }
-           }
-       }
-       return true;
-   }
+  void check(string str){
+        int aux=1;
+        if ((str[0]=='a'||str[0]=='b'||str[0]=='c'||str[0]=='d'||str[0]=='e')&&(str[str.length()-1]=='e'||str[str.length()-1]=='d')){
+            for (int i=0; i<str.length()-1;i++)
+            {
+                if ((str[i]=='a'||str[i]=='b')&&(str[i+1]=='a'||str[i+1]=='b'||str[i+1]=='c'||str[i+1]=='d'||str[i+1]=='e')) aux++;
+                if ((str[i]=='c'||str[i]=='j'||str[i]=='e')&&(str[i+1]=='e'||str[i+1]=='d')) aux++;
+                if ((str[i]=='d'||str[i]=='f')&&(str[i+1]=='f'||str[i+1]=='j')) aux++;
+            }
+        }
+    if (aux==str.length())cout<<"true\n";
+    else cout<<"false\n";
+    }
+    };
    ```
 ## Conclusions / Screenshots / Results
 
-![image](https://user-images.githubusercontent.com/113422203/228363573-1d8ad6f0-df80-48e8-a3d7-19997e685742.png)
+![image](https://user-images.githubusercontent.com/113422203/228898812-f0fa1791-9f74-4bbb-9b6d-f5c88e5e03ff.png)
