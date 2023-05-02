@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <set>
 #include <map>
+#include <algorithm>
 
 using namespace std;
 
@@ -304,6 +305,108 @@ class Lexer {
 };
 
 
+// Function to convert a grammar to CNF
+void convertToCNF(map<char, vector<string>> &grammar, char startSymbol) {
+    // Define a set of non-terminal symbols and their productions
+    map<string, vector<pair<char, char>>> nonTerminals;
+
+    // Loop through all productions and add them to the set of non-terminals
+    for (auto &rule : grammar) {
+        char lhs = rule.first;
+        for (auto &rhs : rule.second) {
+            // Ignore empty productions
+            if (rhs.length() == 0) {
+                continue;
+            }
+            // If the production has length 1 and is a terminal, add it to the set of non-terminals
+            if (rhs.length() == 1 && islower(rhs[0])) {
+                nonTerminals[string(1, rhs[0])].push_back({lhs, ' '});
+            }
+            // If the production has length 1 and is a non-terminal, add it to the set of non-terminals
+            else if (rhs.length() == 1 && isupper(rhs[0])) {
+                nonTerminals[string(1, rhs[0])].push_back({lhs, ' '});
+            }
+            // If the production has length 2 and is composed of two terminals, add it to the set of non-terminals
+            else if (rhs.length() == 2 && islower(rhs[0]) && islower(rhs[1])) {
+                nonTerminals[string(rhs)].push_back({lhs, ' '});
+            }
+            // If the production has length 2 and is composed of a non-terminal and a terminal, add it to the set of non-terminals
+            else if (rhs.length() == 2 && isupper(rhs[0]) && islower(rhs[1])) {
+                nonTerminals[string(1, rhs[1])].push_back({lhs, rhs[0]});
+            }
+            // If the production has length 2 and is composed of two non-terminals, add it to the set of non-terminals
+            else if (rhs.length() == 2 && isupper(rhs[0]) && isupper(rhs[1])) {
+                nonTerminals[string(rhs)].push_back({lhs, ' '});
+            }
+        }
+    }
+
+    // Loop through all possible lengths of substrings
+    for (int len = 2; len <= 3; len++) {
+        // Loop through all possible starting positions of substrings
+        for (int i = 0; i <= (int) startSymbol; i++) {
+            // Loop through all possible ways to split the substring into two parts
+            for (int j = i + 1; j < i + len; j++) {
+                // Get the non-terminals that can produce the left and right substrings
+                vector<pair<char, char>> leftNonTerminals = nonTerminals[string({(char) i, (char) j})];
+                vector<pair<char, char>> rightNonTerminals = nonTerminals[string({(char) j, (char) i + len})];
+
+                // Loop through
+                            // all pairs of non-terminals that can produce the left and right substrings
+            for (auto &leftNT : leftNonTerminals) {
+                for (auto &rightNT : rightNonTerminals) {
+                    // Get the new non-terminal symbol for the combined substring
+                    char newNT = (char) nonTerminals.size() + 'A';
+                    nonTerminals[string({(char) i, (char) i + len})].push_back({newNT, ' '});
+
+                    // Add the new production to the grammar
+                    string newProduction = string(1, leftNT.first) + string(1, rightNT.first);
+                    if (leftNT.second != ' ') {
+                        newProduction = string(1, leftNT.second) + newProduction;
+                    }
+                    if (rightNT.second != ' ') {
+                        newProduction = newProduction + string(1, rightNT.second);
+                    }
+                    grammar[newNT].push_back(newProduction);
+                }
+            }
+        }
+    }
+}
+
+// Remove all productions that are not in CNF
+for (auto &rule : grammar) {
+    vector<string> newProductions;
+    for (auto &rhs : rule.second) {
+        // If the production has length 0 or 1, it is already in CNF
+        if (rhs.length() == 0 || rhs.length() == 1) {
+            newProductions.push_back(rhs);
+        }
+        // If the production has length 2 and is already in CNF, keep it
+        else if (rhs.length() == 2 && isupper(rhs[0]) && isupper(rhs[1])) {
+            newProductions.push_back(rhs);
+        }
+        // If the production has length 2 and is not in CNF, add a new non-terminal
+        else if (rhs.length() == 2 && islower(rhs[0]) && islower(rhs[1])) {
+            char newNT = (char) nonTerminals.size() + 'A';
+            grammar[newNT].push_back(rhs);
+            newProductions.push_back(string(1, newNT));
+        }
+        // If the production has length 3 and is not in CNF, add two new non-terminals
+        else if (rhs.length() == 3 && isupper(rhs[0]) && isupper(rhs[1]) && isupper(rhs[2])) {
+            char newNT1 = (char) nonTerminals.size() + 'A';
+            char newNT2 = (char) nonTerminals.size() + 'A';
+            grammar[newNT1].push_back(string(1, rhs[0]) + string(1, rhs[1]));
+            grammar[newNT2].push_back(string(1, rhs[2]));
+            newProductions.push_back(string(1, newNT1) + string(1, newNT2));
+        }
+    }
+    rule.second = newProductions;
+}
+}
+
+
+
 int main() {
     // Set the random seed
     srand(time(NULL));
@@ -369,7 +472,26 @@ int main() {
     cout << "Token(" << token.type << ", " << token.value << ")" << endl;
   }
 
+    // Define the grammar
+    map<char, vector<string>> grammar = {
+    {'S', {"aB", "bA", "A"}},
+    {'A', {"B", "AS", "bBAB", "b"}},
+    {'B', {"bS", "aD", ""}},
+    {'D', {"AA"}},
+    {'C', {"Ba"}}
+    };
+    // Convert the grammar to CNF
+    convertToCNF(grammar, 'S');
 
+    // Print the CNF grammar
+    for (auto &rule : grammar) {
+        cout << rule.first << " -> ";
+        for (auto &rhs : rule.second) {
+            cout << rhs << " | ";
+            }
+        cout << endl;
+        }
+    
     return 0;
 }
 
