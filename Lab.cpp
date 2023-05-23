@@ -8,6 +8,8 @@
 #include <set>
 #include <map>
 #include <algorithm>
+#include <regex>
+#include <cctype>
 
 using namespace std;
 
@@ -405,7 +407,145 @@ for (auto &rule : grammar) {
 }
 }
 
+// Lab 5
+// TokenType enum
+enum class TokenType {
+    NUMBER,
+    IDENTIFIER,
+    OPERATOR,
+    DELIMITER,
+    KEYWORD
+};
 
+// Function to identify token type
+TokenType identifyTokenType(const std::string& token) {
+    // Regular expressions to match token types
+    std::regex numberRegex(R"(\d+(\.\d+)?)");
+    std::regex identifierRegex(R"([a-zA-Z_]\w*)");
+    std::regex operatorRegex(R"([+\-*/])");
+    std::regex delimiterRegex(R"([(),;])");
+    std::regex keywordRegex(R"(if|else|while|for|return)");
+
+    if (std::regex_match(token, numberRegex)) {
+        return TokenType::NUMBER;
+    } else if (std::regex_match(token, identifierRegex)) {
+        return TokenType::IDENTIFIER;
+    } else if (std::regex_match(token, operatorRegex)) {
+        return TokenType::OPERATOR;
+    } else if (std::regex_match(token, delimiterRegex)) {
+        return TokenType::DELIMITER;
+    } else if (std::regex_match(token, keywordRegex)) {
+        return TokenType::KEYWORD;
+    } else {
+        // Token doesn't match any known type
+        return TokenType::IDENTIFIER; // Or any other appropriate default type
+    }
+}
+
+// Abstract base class for AST nodes
+class ASTNode {
+public:
+    virtual ~ASTNode() {}
+    virtual void print() const = 0;
+};
+
+// AST node for a binary operation
+class BinaryOpNode : public ASTNode {
+private:
+    char op;
+    ASTNode* left;
+    ASTNode* right;
+
+public:
+    BinaryOpNode(char op, ASTNode* left, ASTNode* right)
+        : op(op), left(left), right(right) {}
+
+    void print() const override {
+        std::cout << "(";
+        left->print();
+        std::cout << " " << op << " ";
+        right->print();
+        std::cout << ")";
+    }
+};
+
+// AST node for a number
+class NumberNode : public ASTNode {
+private:
+    double value;
+
+public:
+    NumberNode(double value) : value(value) {}
+
+    void print() const override {
+        std::cout << value;
+    }
+};
+
+class Parser {
+private:
+    std::string input;
+    size_t position;
+
+public:
+    Parser(const std::string& text) : input(text), position(0) {}
+
+    void parse() {
+        parseSentence();
+    }
+
+private:
+    void parseSentence() {
+        parseSubject();
+        parseVerb();
+        parseObject();
+        parseEndOfSentence();
+    }
+
+    void parseSubject() {
+        std::cout << "Subject: ";
+        parseWord();
+        std::cout << std::endl;
+    }
+
+    void parseVerb() {
+        std::cout << "Verb: ";
+        parseWord();
+        std::cout << std::endl;
+    }
+
+    void parseObject() {
+        std::cout << "Object: ";
+        parseWord();
+        std::cout << std::endl;
+    }
+
+    void parseWord() {
+        skipSpaces();
+        std::string word;
+        while (position < input.length() && !isspace(input[position])) {
+            word += input[position];
+            position++;
+        }
+        std::cout << word;
+    }
+
+    void parseEndOfSentence() {
+        skipSpaces();
+        if (input[position] == '.') {
+            std::cout << "End of Sentence" << std::endl;
+            position++;
+        } else {
+            std::cerr << "Error: Expected end of sentence" << std::endl;
+        }
+    }
+
+    void skipSpaces() {
+        while (position < input.length() && isspace(input[position])) {
+            position++;
+        }
+    }
+};
 
 int main() {
     // Set the random seed
@@ -491,7 +631,58 @@ int main() {
             }
         cout << endl;
         }
-    
+
+
+    // Lab 5
+    string token;
+    cout << "Enter a token: ";
+    cin >> token;
+
+    TokenType type = identifyTokenType(token);
+
+    // Output the token type
+    switch (type) {
+        case TokenType::NUMBER:
+            cout << "Token is a number.\n";
+            break;
+        case TokenType::IDENTIFIER:
+            cout << "Token is an identifier.\n";
+            break;
+        case TokenType::OPERATOR:
+            cout << "Token is an operator.\n";
+            break;
+        case TokenType::DELIMITER:
+            cout << "Token is a delimiter.\n";
+            break;
+        case TokenType::KEYWORD:
+            cout << "Token is a keyword.\n";
+            break;
+    }
+
+    // Create a simple AST: (2 + 3) * 4
+    ASTNode* numNode1 = new NumberNode(2);
+    ASTNode* numNode2 = new NumberNode(3);
+    ASTNode* numNode3 = new NumberNode(4);
+    ASTNode* addNode = new BinaryOpNode('+', numNode1, numNode2);
+    ASTNode* multiplyNode = new BinaryOpNode('*', addNode, numNode3);
+
+    // Print the AST
+    multiplyNode->print();
+    cout << endl;
+
+    // Clean up
+    delete multiplyNode;
+    delete addNode;
+    delete numNode1;
+    delete numNode2;
+    delete numNode3;
+
+    string inputText;
+    cout << "Enter a sentence: ";
+    getline(cin, inputText);
+
+    Parser parser(inputText);
+    parser.parse();
+
     return 0;
 }
-
