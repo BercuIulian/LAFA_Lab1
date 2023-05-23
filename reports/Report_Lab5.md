@@ -184,6 +184,8 @@ A parser is a software component that analyzes the structure of a program or a p
 
 ## Conclusions / Screenshots / Results
 ```
-  In conclusion, parsers analyze the syntax of input text based on grammar rules. They break down the input and ensure compliance. Parsers often generate an Abstract Syntax Tree (AST) to represent the parsed structure. ASTs enable further analysis and interpretation. Parsers are crucial for language processing and facilitate the extraction of syntactic information for subsequent processing.
+  In conclusion, parsers analyze the syntax of input text based on grammar rules. They break down the input and ensure compliance.
+  Parsers often generate an Abstract Syntax Tree (AST) to represent the parsed structure. ASTs enable further analysis and interpretation.
+  Parsers are crucial for language processing and facilitate the extraction of syntactic information for subsequent processing.
 ```
 
